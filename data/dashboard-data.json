@@ -1,0 +1,82 @@
+{
+  "locale": "en",
+  "siteTitle": {
+    "en": "Aperture · 光瞳",
+    "zh": "Aperture · 光瞳"
+  },
+  "hero": {
+    "title": {
+      "en": "E-commerce Performance Dashboard",
+      "zh": "电商绩效仪表盘"
+    },
+    "subtitle": {
+      "en": "Track revenue, orders, product growth, and category signals across 12 months.",
+      "zh": "追踪 12 个月的收入、订单、产品增长和品类表现。"
+    }
+  },
+  "summary": {
+    "revenue": {
+      "en": "Total Revenue",
+      "zh": "总收入",
+      "value": 1285400,
+      "delta": 14.8
+    },
+    "orders": {
+      "en": "Total Orders",
+      "zh": "总订单",
+      "value": 18520,
+      "delta": 9.4
+    },
+    "avgOrder": {
+      "en": "Avg. Order Value",
+      "zh": "平均订单价值",
+      "value": 69.4,
+      "delta": 4.1
+    },
+    "products": {
+      "en": "Active Products",
+      "zh": "活跃产品",
+      "value": 1540,
+      "delta": 6.7
+    }
+  },
+  "trend": {
+    "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    "labelsZh": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+    "series": [
+      {
+        "name": {"en": "Revenue", "zh": "收入"},
+        "data": [89000, 96000, 105000, 112000, 118000, 125000, 132000, 140000, 148000, 155000, 160000, 167000]
+      },
+      {
+        "name": {"en": "Orders", "zh": "订单"},
+        "data": [1280, 1340, 1420, 1480, 1520, 1580, 1620, 1680, 1740, 1790, 1820, 1860]
+      }
+    ]
+  },
+  "topProducts": [
+    {"rank": 1, "name": {"en": "Aurora Sneakers", "zh": "极光运动鞋"}, "category": {"en": "Footwear", "zh": "鞋类"}, "revenue": 192700, "growth": 23.4},
+    {"rank": 2, "name": {"en": "Lumen Backpack", "zh": "光点背包"}, "category": {"en": "Accessories", "zh": "配饰"}, "revenue": 138400, "growth": 18.7},
+    {"rank": 3, "name": {"en": "Zen Hoodie", "zh": "禅意卫衣"}, "category": {"en": "Apparel", "zh": "服装"}, "revenue": 114600, "growth": 15.9},
+    {"rank": 4, "name": {"en": "Pulse Smartwatch", "zh": "脉搏智能手表"}, "category": {"en": "Wearables", "zh": "可穿戴"}, "revenue": 103900, "growth": 12.6},
+    {"rank": 5, "name": {"en": "Nova Sunglasses", "zh": "星辰太阳镜"}, "category": {"en": "Accessories", "zh": "配饰"}, "revenue": 99500, "growth": 11.2},
+    {"rank": 6, "name": {"en": "Glide Jeans", "zh": "滑动牛仔裤"}, "category": {"en": "Apparel", "zh": "服装"}, "revenue": 87600, "growth": 9.9},
+    {"rank": 7, "name": {"en": "Echo Earbuds", "zh": "回声耳机"}, "category": {"en": "Audio", "zh": "音频"}, "revenue": 83400, "growth": 8.5},
+    {"rank": 8, "name": {"en": "Halo Lamp", "zh": "光环台灯"}, "category": {"en": "Home", "zh": "家居"}, "revenue": 79200, "growth": 7.8},
+    {"rank": 9, "name": {"en": "Drift Jacket", "zh": "飘逸夹克"}, "category": {"en": "Apparel", "zh": "服装"}, "revenue": 75400, "growth": 7.1},
+    {"rank": 10, "name": {"en": "Pulse Charger", "zh": "脉动充电器"}, "category": {"en": "Electronics", "zh": "电子"}, "revenue": 70200, "growth": 6.4}
+  ],
+  "categories": [
+    {"name": {"en": "Apparel", "zh": "服装"}, "value": 38},
+    {"name": {"en": "Accessories", "zh": "配饰"}, "value": 22},
+    {"name": {"en": "Footwear", "zh": "鞋类"}, "value": 14},
+    {"name": {"en": "Electronics", "zh": "电子"}, "value": 13},
+    {"name": {"en": "Home", "zh": "家居"}, "value": 8},
+    {"name": {"en": "Audio", "zh": "音频"}, "value": 5}
+  ],
+  "highlights": [
+    {"label": {"en": "Conversion Rate", "zh": "转化率"}, "value": "4.8%", "caption": {"en": "Above target for the 3rd straight month.", "zh": "连续三个月高于目标。"}, "status": {"en": "Positive", "zh": "积极"}, "progress": 78, "sentiment": "positive"},
+    {"label": {"en": "Customer Retention", "zh": "客户留存"}, "value": "72%", "caption": {"en": "Momentum holding strong.", "zh": "复购势头稳健。"}, "status": {"en": "Positive", "zh": "积极"}, "progress": 72, "sentiment": "positive"},
+    {"label": {"en": "Inventory Turnover", "zh": "库存周转率"}, "value": "6.5x", "caption": {"en": "Optimized stocking across top categories.", "zh": "顶级品类库存优化。"}, "status": {"en": "Neutral", "zh": "中性"}, "progress": 85, "sentiment": "neutral"}
+  ]
+}

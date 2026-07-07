@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aperture · 光瞳</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.2/echarts.min.js"></script>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top left, rgba(74, 145, 255, 0.22), transparent 28%),
+          radial-gradient(circle at bottom right, rgba(92, 241, 161, 0.12), transparent 26%),
+          linear-gradient(180deg, #06101e 0%, #02060d 100%);
+        color: #f4f7fb;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .page-shell {
+        width: 100vw;
+        height: 100vh;
+        padding: 20px;
+        overflow: hidden;
+      }
+
+      .layout {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        display: grid;
+        grid-template-columns: 1.8fr 1fr 1.2fr;
+        grid-template-rows: 12% 16% 36% 36%;
+        gap: 18px;
+      }
+
+      .hero-panel {
+        grid-column: 1 / span 3;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 24px 32px;
+        border-radius: 28px;
+        background: rgba(15, 30, 55, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 28px 90px rgba(0, 0, 0, 0.24);
+      }
+
+      .hero-copy {
+        display: grid;
+        gap: 10px;
+      }
+
+      .eyebrow {
+        margin: 0;
+        color: #6fd1ff;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .hero-title {
+        margin: 0;
+        font-size: clamp(2.1rem, 2.8vw, 3.4rem);
+        line-height: 1.02;
+      }
+
+      .hero-subtitle {
+        margin: 0;
+        color: #a7b9d6;
+        font-size: 1.05rem;
+        max-width: 920px;
+      }
+
+      .language-switcher {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .lang-btn {
+        padding: 10px 18px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        background: rgba(255, 255, 255, 0.04);
+        color: #f4f7fb;
+        font-weight: 600;
+        transition: transform 180ms ease, background 180ms ease;
+      }
+
+      .lang-btn.active,
+      .lang-btn:hover {
+        background: rgba(74, 145, 255, 0.18);
+        transform: translateY(-1px);
+      }
+
+      .metric-grid {
+        grid-column: 1 / span 3;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .metric-card,
+      .panel {
+        background: rgba(18, 36, 66, 0.94);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
+      }
+
+      .metric-card {
+        padding: 22px 20px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .metric-card strong {
+        font-size: 2rem;
+      }
+
+      .metric-card span {
+        color: #a7b9d6;
+        font-size: 0.95rem;
+      }
+
+      .metric-delta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #6fd1ff;
+        font-weight: 700;
+      }
+
+      .panel {
+        padding: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .panel-header h2 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: #e9eef9;
+      }
+
+      .chart-card {
+        height: 100%;
+        min-height: 250px;
+      }
+
+      .top-products-panel {
+        grid-column: 1 / span 2;
+        min-height: 100%;
+      }
+
+      .category-panel {
+        grid-column: 3 / 4;
+      }
+
+      .trend-panel {
+        grid-column: 1 / span 2;
+      }
+
+      .highlight-panel {
+        grid-column: 3 / 4;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        flex: 1;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+
+      thead th {
+        color: #9eb8d9;
+        font-weight: 600;
+        text-align: left;
+        padding: 12px 10px;
+      }
+
+      tbody tr {
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      tbody td {
+        padding: 12px 10px;
+        color: #eff4ff;
+      }
+
+      tbody tr:nth-child(odd) {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .growth-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+
+      .growth-chip.positive {
+        background: rgba(93, 211, 158, 0.16);
+        color: #8bf2c6;
+      }
+
+      .growth-chip.negative {
+        background: rgba(255, 122, 110, 0.16);
+        color: #ffad9d;
+      }
+
+      .highlight-grid {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: 1fr;
+      }
+
+      .highlight-card {
+        padding: 22px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        display: grid;
+        gap: 14px;
+      }
+
+      .highlight-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .highlight-status {
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .highlight-status.positive {
+        color: #8bf2c6;
+        background: rgba(93, 211, 158, 0.14);
+      }
+
+      .highlight-status.neutral {
+        color: #f4d66c;
+        background: rgba(244, 214, 108, 0.16);
+      }
+
+      .highlight-value {
+        font-size: 1.95rem;
+        font-weight: 700;
+      }
+
+      .highlight-card p {
+        margin: 0;
+        color: #b7c7e4;
+        line-height: 1.6;
+        font-size: 0.95rem;
+      }
+
+      .progress-row {
+        display: grid;
+        gap: 10px;
+      }
+
+      .progress-label {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #e9eef9;
+      }
+
+      .progress-track {
+        width: 100%;
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #4a91ff, #5dd39e);
+        transition: width 0.35s ease;
+      }
+
+      @media (max-width: 1660px) {
+        .layout {
+          grid-template-columns: 1.4fr 1fr;
+          grid-template-rows: minmax(160px, 18%) 1fr 1fr 1fr;
+        }
+
+        .trend-panel,
+        .top-products-panel,
+        .category-panel,
+        .highlight-panel {
+          grid-column: 1 / span 2;
+        }
+      }
+
+      @media (max-width: 1080px) {
+        .page-shell,
+        .layout {
+          width: 100vw;
+          height: 100vh;
+          padding: 16px;
+        }
+
+        .layout {
+          grid-template-columns: 1fr;
+          grid-template-rows: auto auto auto auto auto;
+        }
+
+        .metric-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .hero-panel {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="layout">
+        <header class="hero-panel">
+          <div class="hero-copy">
+            <p class="eyebrow">Aperture · 光瞳</p>
+            <h1 class="hero-title">Bilingual E-commerce Dashboard</h1>
+          </div>
+          <div class="language-switcher">
+            <button class="lang-btn active" data-locale="en">EN</button>
+            <button class="lang-btn" data-locale="zh">中文</button>
+          </div>
+        </header>
+
+        <section class="metric-grid" id="metric-grid"></section>
+
+        <section class="panel trend-panel">
+          <div class="panel-header">
+            <h2 id="trend-title"></h2>
+          </div>
+          <div id="trend-chart" class="chart-card"></div>
+        </section>
+
+        <section class="panel category-panel">
+          <div class="panel-header">
+            <h2 id="category-title"></h2>
+          </div>
+          <div id="category-chart" class="chart-card"></div>
+        </section>
+
+        <section class="panel top-products-panel">
+          <div class="panel-header">
+            <h2 id="top-products-title"></h2>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th id="product-header"></th>
+                  <th id="sales-header"></th>
+                  <th id="revenue-header"></th>
+                  <th id="growth-header"></th>
+                </tr>
+              </thead>
+              <tbody id="product-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel highlight-panel">
+          <div class="panel-header">
+            <h2 id="insights-title"></h2>
+          </div>
+          <div class="highlight-grid" id="highlight-grid"></div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      const kpiData = {
+        en: {
+          revenue: { value: 1285400, change: 14.8, prefix: '$' },
+          orders: { value: 18520, change: 4.1 },
+          aov: { value: 69, change: 4.1, prefix: '$' },
+          products: { value: 1540, change: 6.7 }
+        },
+        zh: {
+          revenue: { value: 1285400, change: 14.8, prefix: '¥' },
+          orders: { value: 18520, change: 4.1 },
+          aov: { value: 69, change: 4.1, prefix: '¥' },
+          products: { value: 1540, change: 6.7 }
+        }
+      };
+
+      const trendData = {
+        months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        monthsZh: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+        revenue: [820000, 890000, 950000, 1020000, 980000, 1150000, 1280000, 1350000, 1420000, 1580000, 1650000, 1780000],
+        orders: [820, 860, 920, 980, 940, 1100, 1220, 1280, 1350, 1450, 1520, 1600]
+      };
+
+      const categoryData = {
+        en: [
+          { name: 'Electronics', value: 45 },
+          { name: 'Clothing', value: 30 },
+          { name: 'Books', value: 15 },
+          { name: 'Home & Living', value: 10 }
+        ],
+        zh: [
+          { name: '电子产品', value: 45 },
+          { name: '服装', value: 30 },
+          { name: '图书', value: 15 },
+          { name: '家居生活', value: 10 }
+        ]
+      };
+
+      const productsData = {
+        en: [
+          { rank: 1, name: 'Echo Earbuds', sales: 1234, revenue: 83400, growth: 8.5 },
+          { rank: 2, name: 'Smart Watch Pro', sales: 1098, revenue: 76500, growth: 12.3 },
+          { rank: 3, name: 'Laptop Stand', sales: 987, revenue: 45600, growth: 6.7 },
+          { rank: 4, name: 'Wireless Keyboard', sales: 876, revenue: 38900, growth: -2.1 },
+          { rank: 5, name: 'USB-C Hub', sales: 765, revenue: 34200, growth: 15.4 },
+          { rank: 6, name: 'Monitor 4K', sales: 654, revenue: 29800, growth: 9.8 },
+          { rank: 7, name: 'Mechanical Mouse', sales: 543, revenue: 24500, growth: 4.2 },
+          { rank: 8, name: 'Desk Mat', sales: 432, revenue: 19800, growth: 22.1 },
+          { rank: 9, name: 'Webcam HD', sales: 321, revenue: 15600, growth: -5.6 },
+          { rank: 10, name: 'Phone Grip', sales: 210, revenue: 12300, growth: 11.2 }
+        ],
+        zh: [
+          { rank: 1, name: '回声耳机', sales: 1234, revenue: 83400, growth: 8.5 },
+          { rank: 2, name: '智能手表 Pro', sales: 1098, revenue: 76500, growth: 12.3 },
+          { rank: 3, name: '笔记本支架', sales: 987, revenue: 45600, growth: 6.7 },
+          { rank: 4, name: '无线键盘', sales: 876, revenue: 38900, growth: -2.1 },
+          { rank: 5, name: 'USB-C 扩展坞', sales: 765, revenue: 34200, growth: 15.4 },
+          { rank: 6, name: '4K 显示器', sales: 654, revenue: 29800, growth: 9.8 },
+          { rank: 7, name: '机械鼠标', sales: 543, revenue: 24500, growth: 4.2 },
+          { rank: 8, name: '桌面垫', sales: 432, revenue: 19800, growth: 22.1 },
+          { rank: 9, name: '高清摄像头', sales: 321, revenue: 15600, growth: -5.6 },
+          { rank: 10, name: '手机支架', sales: 210, revenue: 12300, growth: 11.2 }
+        ]
+      };
+
+      const insightsData = {
+        en: [
+          { metric: '4.8%', label: 'Conversion Rate', status: 'positive', detail: 'Above target for the 3rd straight month', progress: 78 },
+          { metric: '72%', label: 'Repeat Purchase', status: 'positive', detail: 'Momentum holding strong', progress: 72 },
+          { metric: '6.5x', label: 'Inventory Turnover', status: 'neutral', detail: 'Optimized stocking across top categories', progress: 85 }
+        ],
+        zh: [
+          { metric: '4.8%', label: '转化率', status: 'positive', detail: '连续第三个月高于目标', progress: 78 },
+          { metric: '72%', label: '复购率', status: 'positive', detail: '势头保持强劲', progress: 72 },
+          { metric: '6.5x', label: '库存周转率', status: 'neutral', detail: '优化了各品类库存', progress: 85 }
+        ]
+      };
+
+      const translations = {
+        en: {
+          subtitle: 'Data Dashboard',
+          kpi: {
+            revenue: 'Total Revenue',
+            orders: 'Total Orders',
+            aov: 'Avg. Order Value',
+            products: 'Active Products'
+          },
+          charts: {
+            trend: '12-Month Revenue & Orders Trend',
+            category: 'Category Share Breakdown',
+            products: 'Top 10 Products by Growth'
+          },
+          table: {
+            rank: '#',
+            product: 'Product Name',
+            sales: 'Sales',
+            revenue: 'Revenue',
+            growth: 'Growth'
+          },
+          insights: 'Strategic Insights'
+        },
+        zh: {
+          subtitle: '数据看板',
+          kpi: {
+            revenue: '总营收',
+            orders: '总订单数',
+            aov: '客单价',
+            products: '活跃产品'
+          },
+          charts: {
+            trend: '12个月营收与订单趋势',
+            category: '品类占比',
+            products: '增长最快 Top 10 产品'
+          },
+          table: {
+            rank: '排名',
+            product: '产品名称',
+            sales: '销量',
+            revenue: '营收',
+            growth: '增长率'
+          },
+          insights: '战略洞察'
+        }
+      };
+
+      let currentLocale = 'en';
+
+      const formatNumber = (value) =>
+        typeof value === 'number'
+          ? value.toLocaleString(currentLocale === 'zh' ? 'zh-CN' : 'en-US', { maximumFractionDigits: 0 })
+          : value;
+
+      const formatCurrency = (value, prefix = '') => `${prefix}${formatNumber(value)}`;
+
+      const setText = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      };
+
+      const renderHero = () => {
+        setText('hero-title', translations[currentLocale].appName || 'Aperture · 光瞳');
+        setText('hero-subtitle', translations[currentLocale].subtitle);
+      };
+
+      const renderMetrics = () => {
+        const container = document.getElementById('metric-grid');
+        container.innerHTML = '';
+        const metricKeys = ['revenue', 'orders', 'aov', 'products'];
+        metricKeys.forEach((key) => {
+          const metric = kpiData[currentLocale][key];
+          const label = translations[currentLocale].kpi[key];
+          const value = metric.prefix ? formatCurrency(metric.value, metric.prefix) : formatNumber(metric.value);
+          const delta = metric.change >= 0 ? `▲ ${metric.change}%` : `▼ ${Math.abs(metric.change)}%`;
+          const card = document.createElement('article');
+          card.className = 'metric-card';
+          card.innerHTML = `<strong>${value}</strong><span>${label}</span><div class="metric-delta">${delta}</div>`;
+          container.appendChild(card);
+        });
+      };
+
+      const renderTrendChart = () => {
+        const chart = echarts.init(document.getElementById('trend-chart'));
+        const labels = currentLocale === 'zh' ? trendData.monthsZh : trendData.months;
+        const option = {
+          backgroundColor: 'transparent',
+          tooltip: { trigger: 'axis', axisPointer: { type: 'line' }, textStyle: { color: '#fff' }, backgroundColor: 'rgba(10, 18, 32, 0.95)' },
+          legend: { textStyle: { color: '#c7d2eb' }, data: [currentLocale === 'zh' ? '收入' : 'Revenue', currentLocale === 'zh' ? '订单' : 'Orders'] },
+          grid: { left: '4%', right: '4%', bottom: '12%', top: '18%', containLabel: true },
+          xAxis: { type: 'category', data: labels, axisLine: { lineStyle: { color: '#3f628f' } }, axisLabel: { color: '#ccd8f1' }, axisTick: { show: false } },
+          yAxis: { type: 'value', axisLine: { show: false }, axisTick: { show: false }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } }, axisLabel: { color: '#ccd8f1' } },
+          series: [
+            { name: currentLocale === 'zh' ? '收入' : 'Revenue', type: 'line', smooth: true, symbol: 'circle', symbolSize: 8, lineStyle: { width: 3 }, areaStyle: { opacity: 0.2 }, data: trendData.revenue },
+            { name: currentLocale === 'zh' ? '订单' : 'Orders', type: 'line', smooth: true, symbol: 'circle', symbolSize: 8, lineStyle: { width: 3 }, areaStyle: { opacity: 0.14 }, data: trendData.orders }
+          ]
+        };
+        chart.setOption(option);
+      };
+
+      const renderCategoryChart = () => {
+        const chart = echarts.init(document.getElementById('category-chart'));
+        const data = categoryData[currentLocale].map((item) => ({ name: item.name, value: item.value }));
+        chart.setOption({
+          backgroundColor: 'transparent',
+          tooltip: { trigger: 'item', formatter: '{b}: {c}% ({d}%)', textStyle: { color: '#fff' }, backgroundColor: 'rgba(8, 16, 28, 0.96)' },
+          legend: { orient: 'vertical', left: 'left', top: 'center', textStyle: { color: '#c7d2eb' } },
+          series: [{ type: 'pie', radius: ['52%', '76%'], center: ['62%', '52%'], label: { show: false }, emphasis: { scale: true, itemStyle: { shadowBlur: 18, shadowColor: 'rgba(0, 0, 0, 0.45)' } }, data, itemStyle: { borderColor: '#06101c', borderWidth: 2 } }]
+        });
+      };
+
+      const renderProducts = () => {
+        setText('top-products-title', translations[currentLocale].charts.products);
+        setText('product-header', translations[currentLocale].table.product);
+        setText('sales-header', translations[currentLocale].table.sales);
+        setText('revenue-header', translations[currentLocale].table.revenue);
+        setText('growth-header', translations[currentLocale].table.growth);
+        const tbody = document.getElementById('product-rows');
+        tbody.innerHTML = '';
+        productsData[currentLocale].forEach((item) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${item.rank}</td><td>${item.name}</td><td>${formatNumber(item.sales)}</td><td>${formatCurrency(item.revenue, currentLocale === 'zh' ? '¥' : '$')}</td><td><span class="growth-chip ${item.growth >= 0 ? 'positive' : 'negative'}">${item.growth >= 0 ? '+' : ''}${item.growth}%</span></td>`;
+          tbody.appendChild(tr);
+        });
+      };
+
+      const renderInsights = () => {
+        setText('insights-title', translations[currentLocale].insights);
+        const container = document.getElementById('highlight-grid');
+        container.innerHTML = '';
+        insightsData[currentLocale].forEach((item) => {
+          const card = document.createElement('article');
+          card.className = 'highlight-card';
+          const statusText = item.status === 'positive' ? (currentLocale === 'zh' ? '积极' : 'Positive') : (currentLocale === 'zh' ? '中性' : 'Neutral');
+          card.innerHTML = `<div class="highlight-card-head"><strong>${item.label}</strong><span class="highlight-status ${item.status}">${statusText}</span></div><div class="highlight-value">${item.metric}</div><p>${item.detail}</p><div class="progress-row"><span class="progress-label">${item.progress}%</span><div class="progress-track"><div class="progress-fill" style="width: ${item.progress}%"></div></div></div>`;
+          container.appendChild(card);
+        });
+      };
+
+      const renderLabels = () => {
+        setText('trend-title', translations[currentLocale].charts.trend);
+        setText('category-title', translations[currentLocale].charts.category);
+      };
+
+      const renderAll = () => {
+        renderHero();
+        renderMetrics();
+        renderLabels();
+        renderTrendChart();
+        renderCategoryChart();
+        renderProducts();
+        renderInsights();
+      };
+
+      document.querySelectorAll('.lang-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('.lang-btn').forEach((btn) => btn.classList.remove('active'));
+          button.classList.add('active');
+          currentLocale = button.dataset.locale;
+          renderAll();
+        });
+      });
+
+      window.addEventListener('resize', () => {
+        echarts.getInstanceByDom(document.getElementById('trend-chart'))?.resize();
+        echarts.getInstanceByDom(document.getElementById('category-chart'))?.resize();
+      });
+
+      renderAll();
+    </script>
+  </body>
+</html>
