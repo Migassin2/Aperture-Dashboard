@@ -2,7 +2,7 @@
 
 ## Overview
 A production-ready bilingual e-commerce dashboard built as a JAMstack site. The dashboard ships as a single HTML page with all data prebuilt and embedded, using ECharts for polished visualizations.
-
+![Dashboard Preview](src/screenshot/APERTURE.png)
 ## Project Structure
 - `src/`
   - `index.template.html` — HTML template used during the build.
